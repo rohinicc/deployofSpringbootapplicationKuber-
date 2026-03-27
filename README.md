@@ -35,6 +35,7 @@ User (Browser)
       ▼
 [ Persistent Volume ]         <─── (Storage Layer)
 
+
 🧰 Technology Stack
 Backend: Spring Boot (Java)
 
