@@ -1,164 +1,104 @@
-# 🚀 Spring Boot & MySQL Deployment on Kubernetes (Kubeadm)
+🚀 Spring Boot & MySQL Deployment on Kubernetes (Kubeadm)
 
-This repository contains a full-stack deployment of a Spring Boot application and a MySQL database on a Kubernetes cluster provisioned via **kubeadm**. It demonstrates a robust DevOps workflow including stateful orchestration, internal/external networking, and persistent storage management on AWS EC2.
+This repository contains a production-style deployment of a Spring Boot application with a MySQL database on a Kubernetes cluster provisioned using kubeadm.
 
----
+It demonstrates a complete DevOps workflow including containerization, orchestration, networking, persistent storage, and deployment automation on AWS EC2.
 
-## 🏗️ Architecture Overview
+🏗️ Architecture Overview
 
-The deployment follows a decoupled, multi-tier architecture:
+The system follows a multi-tier, decoupled architecture:
 
-* **Application Layer:** Spring Boot (Java) managed via a Kubernetes `Deployment`.
-* **Database Layer:** MySQL 8.0 managed via a `StatefulSet` for stable network identity.
-* **Networking Strategy:**
-    * **ClusterIP Service:** Provides a stable **internal** IP for the Spring Boot app to communicate with MySQL (secure and private).
-    * **NodePort Service:** Exposes the Spring Boot application to **external** traffic via the EC2 Public IP on a specific port.
-* **Storage:** Persistent Volume (PV) and Claims (PVC) using `local-path-provisioner`.
-
-### 🔄 Architecture Flow
-
-```text
-User (Browser) 
+Application Layer: Spring Boot (Java) deployed using Kubernetes Deployment
+Database Layer: MySQL deployed using StatefulSet (ensures stable identity & storage)
+Networking Strategy:
+ClusterIP Service: Internal communication between app and database
+NodePort Service: External access via EC2 Public IP
+Storage: Persistent Volume (PV) and PVC using local-path-provisioner
+🔄 Architecture Flow
+User (Browser)
       │
       ▼
-[ EC2 Public IP : NodePort ]  <─── (NodePort Service)
+[ EC2 Public IP : NodePort ]   (NodePort Service)
       │
       ▼
-[ Spring Boot Pod ]           <─── (Deployment)
+[ Spring Boot Pod ]            (Deployment)
       │
       ▼
-[ MySQL Service ]             <─── (ClusterIP Service: Internal Only)
+[ MySQL Service ]              (ClusterIP - Internal)
       │
       ▼
-[ MySQL Pod ]                 <─── (StatefulSet)
+[ MySQL Pod ]                  (StatefulSet)
       │
       ▼
-[ Persistent Volume ]         <─── (Storage Layer)
-
-
+[ Persistent Volume ]          (Storage)
 🧰 Technology Stack
 Backend: Spring Boot (Java)
-
 Database: MySQL
-
 Containerization: Docker
-
 Orchestration: Kubernetes (kubeadm)
-
 Infrastructure: AWS EC2 (Ubuntu 22.04)
-
 Scripting: Bash
-
-Gemini said
-Markdown
-# 🚀 Spring Boot & MySQL Deployment on Kubernetes (Kubeadm)
-
-This repository contains a full-stack deployment of a Spring Boot application and a MySQL database on a Kubernetes cluster provisioned via **kubeadm**. It demonstrates a robust DevOps workflow including stateful orchestration, internal/external networking, and persistent storage management on AWS EC2.
-
----
-
-## 🏗️ Architecture Overview
-
-The deployment follows a decoupled, multi-tier architecture:
-
-* **Application Layer:** Spring Boot (Java) managed via a Kubernetes `Deployment`.
-* **Database Layer:** MySQL 8.0 managed via a `StatefulSet` for stable network identity.
-* **Networking Strategy:**
-    * **ClusterIP Service:** Provides a stable **internal** IP for the Spring Boot app to communicate with MySQL (secure and private).
-    * **NodePort Service:** Exposes the Spring Boot application to **external** traffic via the EC2 Public IP on a specific port.
-* **Storage:** Persistent Volume (PV) and Claims (PVC) using `local-path-provisioner`.
-
-### 🔄 Architecture Flow
-
-```text
-User (Browser) 
-      │
-      ▼
-[ EC2 Public IP : NodePort ]  <─── (NodePort Service)
-      │
-      ▼
-[ Spring Boot Pod ]           <─── (Deployment)
-      │
-      ▼
-[ MySQL Service ]             <─── (ClusterIP Service: Internal Only)
-      │
-      ▼
-[ MySQL Pod ]                 <─── (StatefulSet)
-      │
-      ▼
-[ Persistent Volume ]         <─── (Storage Layer)
-🧰 Technology Stack
-Backend: Spring Boot (Java)
-
-Database: MySQL
-
-Containerization: Docker
-
-Orchestration: Kubernetes (kubeadm)
-
-Infrastructure: AWS EC2 (Ubuntu 22.04)
-
-Scripting: Bash
-
 📁 Project Structure
-
 spring_mysql_kubeadm_sakcoorg/
 │
 ├── kube_scripts/
-│   ├── app-deploy-svc.yml      # Spring Boot Deployment & NodePort Service
-│   ├── db-statefullset-svc.yml  # MySQL StatefulSet & ClusterIP Service
-│   └── setup-storage.sh        # Script to configure StorageClass & PV
+│   ├── app-deploy-svc.yml        # Spring Boot Deployment + NodePort Service
+│   ├── db-statefullset-svc.yml   # MySQL StatefulSet + ClusterIP Service
+│   └── setup-storage.sh          # Storage setup script
 │
-├── Dockerfile                  # Multi-stage Docker build
-├── k8s-deploy.sh               # Main interactive deployment script
-├── docker_build_push.sh        # Automation for Docker Hub image updates
-└── src/                        # Java Application Source Code
-
+├── Dockerfile                    # Multi-stage Docker build
+├── k8s-deploy.sh                # Interactive deployment script
+├── docker_build_push.sh         # Docker build & push automation
+└── src/                         # Application source code
 ⚙️ Deployment Workflow
 1️⃣ Build & Push Docker Image
-Ensure your environment is logged into Docker Hub, then execute:
+
+Ensure Docker is logged in, then run:
+
 bash docker_build_push.sh
-
 2️⃣ Run Deployment Script
-The k8s-deploy.sh script is an interactive tool to manage cluster resources:
-
-Bash
 bash k8s-deploy.sh
-Option 1 (Deploy DB): Sets up storage, creates the ClusterIP service, and starts MySQL.
+3️⃣ Deploy Database
 
-Option 2 (Deploy App): Deploys Spring Boot and exposes it via NodePort.
+Select:
 
-🌐 Live Application Access
-Once deployed, the application is accessible via the web using the EC2 Public IP and the assigned NodePort.
+1) Deploy DB
 
-Access URL: http://13.233.129.181:30085
+✔ Sets up storage
+✔ Deploys MySQL StatefulSet
+✔ Creates ClusterIP service
 
-Internal Communication: The Spring Boot backend connects to MySQL using the service name mysql-service (ClusterIP).
+4️⃣ Deploy Application
 
+Select:
+
+2) Deploy App
+
+✔ Deploys Spring Boot application
+✔ Exposes service via NodePort
+
+🌐 Application Access
+
+Once deployed, access the application via:
+
+http://<EC2-Public-IP>:<NodePort>
+
+Example:
+
+http://13.233.129.181:30085
 📸 Screenshots
-1. Application Running (Live)
-The "SAK Group" home page successfully served by Kubernetes pods.
-
-<p align="center">
-<img src="https://github.com/user-attachments/assets/a3ae3862-628f-4255-bd86-5060cd08b4ba" width="90%">
-</p>
-
-2. Docker Hub Repositories
-Verification of the pushed images in the rohinicc registry.
-
-<p align="center">
-<img src="https://github.com/user-attachments/assets/10a095e0-0c1a-4f6f-bb59-9ba8aec95df5" width="90%">
-</p>
-
+🌐 Application Running
+<p align="center"> <img src="https://github.com/user-attachments/assets/a3ae3862-628f-4255-bd86-5060cd08b4ba" width="90%"> </p>
+🐳 Docker Hub Repositories
+<p align="center"> <img src="https://github.com/user-attachments/assets/10a095e0-0c1a-4f6f-bb59-9ba8aec95df5" width="90%"> </p>
 🔍 Verification & Monitoring
-Check the status of your Kubernetes resources with these commands:
-
-Bash
-# Check all Pods, Services, and StatefulSets
+# View all resources
 kubectl get all -o wide
 
-# Check logs for the Spring Boot application
+# Check application logs
 kubectl logs -f deployment/spring-app
 
+# Check services
+kubectl get svc
 # Verify the NodePort assignment
 kubectl get svc spring-app-service
